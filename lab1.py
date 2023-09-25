@@ -10,12 +10,12 @@ from statistics import mean
 
 def linear_regression_model(X_train, y_train, k):
     model = linear_model.LinearRegression()
-    lin_reg_scores = cross_validate(model, X_train, y_train, #scoring='neg_mean_squared_error' : minimizar the MSE
+    model_scores = cross_validate(model, X_train, y_train, #scoring='neg_mean_squared_error' : minimizar the MSE
                                     cv=k, scoring='neg_mean_squared_error', return_train_score=True)
-    lin_reg_MSE = abs(np.mean(lin_reg_scores['test_score']))
-    print("linear - Erro quadrático nos dados de teste:", lin_reg_scores['test_score'])
-    print("linear - Erro quadrático nos dados de treino:", lin_reg_scores['train_score'])
-    print("linear - Erro quadratico medio de teste", lin_reg_MSE, "\n")
+    model_MSE = abs(np.mean(model_scores['test_score']))
+    print("linear - Erro quadrático nos dados de teste:", model_scores['test_score'])
+    print("linear - Erro quadrático nos dados de treino:", model_scores['train_score'])
+    print("linear - Erro quadratico medio de teste", model_MSE, "\n")
     return model
 
 def ridge_regression(X_train, y_train, k):
@@ -55,12 +55,16 @@ def predict(model, X_train, y_train, X_test):
     #print(model.intercept_)
     return y_predict
 
-def main():
+def load_data():
     X_train = np.load('X_train_regression1.npy')
     y_train = np.load('y_train_regression1.npy')
     X_test = np.load('X_test_regression1.npy')
+    return X_train, y_train, X_test
+
+def main():
+    X_train, y_train, X_test = load_data()
     X_train_norm, X_test_norm = normalize_data(X_train, X_test) # Removing the mean and scaling to unit variance.
-    k = 10  # Numero splits, each with 15/5=3 elements, test with k-fold cross validation
+    k = 10  # Number splits, each with 15/5=3 elements(for k=5), test with k-fold cross validation
     model = linear_regression_model(X_train_norm, y_train, k)
     ridge_regression(X_train_norm, y_train, k)
     lasso_regression(X_train_norm, y_train, k)
