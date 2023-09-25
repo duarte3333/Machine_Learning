@@ -14,7 +14,7 @@ def normalize(m):
     return m
 
 def polynomial_model(X_in, y):
-    power = 10
+    power = 4
     Xp = np.hstack((np.ones((X_in.shape[0], 1)), X_in))  # Include a column of ones
     new = [np.power(np.array(Xp[:, 1]), i) for i in range(power)]
     phiP = np.asmatrix(np.column_stack(new))
