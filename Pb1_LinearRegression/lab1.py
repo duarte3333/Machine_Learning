@@ -73,7 +73,17 @@ def lasso_lars_regression(X_train, y_train, k): #bad idea: just for high dimensi
     print("lasso_lars - Melhor lambda", lasso_lars_lambda, "\n")
     return model, lasso_lars_MSE
 
-def orthogonal_matching_pursuit_regression(X_train, y_train, k): #bad idea: problem is not that overdeterminated
+
+def bayesian_regression(X_train, y_train, k):
+    model = linear_model.ARDRegression()
+    model.fit(X_train, np.ravel(y_train))
+    cv_results = cross_validate(model, X_train, np.ravel(y_train), cv=k, scoring='neg_mean_squared_error',
+                                return_train_score=True)
+    bayesian_mse = abs(cv_results['test_score'].mean())
+    print("bayesian -  Erro quadratico medio:", bayesian_mse, "\n")
+    return model, bayesian_mse
+
+def orthogonal_matching_pursuit_regression(X_train, y_train, k): #good idea: problem is overdeterminated
     model = (linear_model.OrthogonalMatchingPursuitCV(cv=k, max_iter=10))
     model.fit(X_train, np.ravel(y_train))
     omp_n_zero_coef = model.n_nonzero_coefs_  # Choose number of non zero coefficients that best fits the data
@@ -131,11 +141,12 @@ def main():
     X_train, y_train, X_test = load_data()
     #corr_matrix(X_train) #See correlation between the features of the dataset
     X_train_norm, X_test_norm = normalize_data(X_train, X_test)  # Removing the mean and scaling to unit variance.
-    k = 5  # Number splits, each with 15/5=3 elements(for k=5), test with k-fold cross validation
+    k = 10  # Number splits, each with 15/5=3 elements(for k=5), test with k-fold cross validation
     functions = [linear_regression_model, ridge_regression,
                  lasso_regression, lasso_lars_regression,
+                 bayesian_regression,
                  orthogonal_matching_pursuit_regression]
-    best_model = get_best_model(functions, X_train_norm, y_train, k)
+    best_model = get_best_model(functions, X_train, y_train, k)
     y_predict = predict(best_model, X_train, y_train, X_test)
     np.save('Y_Predicted.npy', y_predict)
 
