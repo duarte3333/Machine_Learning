@@ -61,6 +61,9 @@ def elastic_regression(X_train, y_train, k):
     print("elactic - Melhor lambda", elastic_lambda, "\n")
     return model, elastic_MSE
 
+def lasso_lars_regression(X_train, y_train, k):
+    lassoLars_reg = linear_model.LassoLarsCV(cv=k, normalize=False).fit(X, np.ravel(Y))
+
 def normalize_data(X_train, X_test):
     scaler = preprocessing.StandardScaler()
     scaler.fit(X_train)
