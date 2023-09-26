@@ -50,3 +50,5 @@ def main():
 main()
 from NonLinearRadialBasisFunction import *
 from PolynomialRegression import*
+
+model (ahsdgaj)
