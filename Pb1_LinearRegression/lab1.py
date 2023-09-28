@@ -23,7 +23,7 @@ def linear_regression_model(X_train, y_train, k):
 
 def ridge_regression(X_train, y_train, k):
     ridge_lambdas = create_lambdas(0.1, 10, 0.01)
-    model = linear_model.RidgeCV(alphas=ridge_lambdas, scoring='neg_mean_squared_error', cv=k)
+    model = linear_model.RidgeCV(alphas=ridge_lambdas, scoring='neg_mean_squared_error')
     model.fit(X_train, y_train)
     ridge_lambda = model.alpha_  # Melhor lambda que se ajusta
     ridge_MSE = abs(model.best_score_)  # score of the best lambda
@@ -89,7 +89,7 @@ def orthogonal_matching_pursuit_regression(X_train, y_train, k): #good idea: pro
     model = (linear_model.OrthogonalMatchingPursuitCV(cv=k, max_iter=10))
     model.fit(X_train, np.ravel(y_train))
     omp_n_zero_coef = model.n_nonzero_coefs_  # Choose number of non zero coefficients that best fits the data
-    new_model = linear_model.OrthogonalMatchingPursuit(n_nonzero_coefs=omp_n_zero_coef)
+    new_model = linear_model.OrthogonalMatchingPursuit(n_nonzero_coefs=omp_n_zero_coef, fit_intercept= True)
     cross_model = cross_validate(new_model 
         , X_train, y_train, cv=k,
         scoring='neg_mean_squared_error', return_train_score=True)
@@ -99,10 +99,9 @@ def orthogonal_matching_pursuit_regression(X_train, y_train, k): #good idea: pro
     
     return new_model, omp_MSE
 
-def normalize_data(X_train, X_test):
+def standardization_data(X_train, X_test):
     scaler = preprocessing.StandardScaler()
-    scaler.fit(X_train)
-    X_train_norm = scaler.transform(X_train)  # mean = 0 ; standard deviation aprox 1
+    X_train_norm = scaler.fit_transform(X_train)  # mean = 0 ; standard deviation aprox 1
     X_test_norm = scaler.transform(X_test)
     return X_train_norm, X_test_norm
 
@@ -151,19 +150,23 @@ def predict(model, X_train, y_train, X_test):
     # print(model.intercept_)
     return y_predict
 
+def centering_data(X_train, X_test):
+    X_train_cent = [i - sum(X_train)/len(X_train) for i in X_train]
+    X_test_cent = [i - sum(X_test)/len(X_test) for i in X_test]
+    return X_train_cent, X_test_cent
+
 def main():
     X_train, y_train, X_test = load_data()
-    X_train_norm, X_test_norm = normalize_data(X_train, X_test)  # Removing the mean and scaling to unit variance.
+    X_train_norm, X_test_norm = standardization_data(X_train, X_test)  # Removing the mean and scaling to unit variance.
     # corr_matrix(X_train) #See correlation between the features of the dataset
-    k = 10  # Number splits, each with 15/5=3 elements(for k=5), test with k-fold cross validation
+    k = 10  # Number splits, each with 15/5=3 elements(for k=5), test with k-fold cross validation 
     functions = [linear_regression_model, ridge_regression,
                  lasso_regression, lasso_lars_regression, 
                  elastic_regression, orthogonal_matching_pursuit_regression]
-    best_model = get_best_model(functions, X_train, y_train, k)
-    y_predict = predict(best_model, X_train, y_train, X_test)
-    print(y_predict)
+    best_model = get_best_model(functions, X_train_norm, y_train, k)
+    y_predict = predict(best_model, X_train_norm, y_train, X_test_norm)
     np.save('Y_Predicted.npy', y_predict)
 
-  
 if __name__ == '__main__':
     main()
+
