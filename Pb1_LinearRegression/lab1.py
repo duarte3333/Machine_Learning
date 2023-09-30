@@ -123,16 +123,16 @@ def corr_matrix(X_train):
 
 def histogram(X_train):
     """ Plot a histogram of X data. """
-    fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(18, 8))
-    axes = axes.flatten()
+    fig, axe = plt.subplots(nrows=2, ncols=5, figsize=(18, 8))
+    axe = axe.flatten() #Easy way to plot the 10 subplots
 
     for i in range(len(X_train[0])):
-        axes[i].hist(X_train[:, i], bins=5, color='blue', alpha=0.7)
-        axes[i].set_title('Feature')
-        axes[i].set_xlabel('Value')
-        axes[i].set_ylabel('Frequency')
+        axe[i].hist(X_train[:, i],color='mediumseagreen',  bins=5) 
+        axe[i].set_title('Feature')
+        axe[i].set_xlabel('Value')
+        axe[i].set_ylabel('Frequency')
 
-    plt.tight_layout()
+    plt.tight_layout() #So y_label doesn't intercept other histograms
     plt.show()
 
 def get_best_model(functions, X, y, k):
@@ -168,6 +168,7 @@ def main():
     best_model = get_best_model(functions, X_train, y_train, k)
     y_predict = predict(best_model, X_train, y_train, X_test) 
     np.save('Y_Predicted.npy', y_predict)
+
 
 if __name__ == '__main__':
     main()
