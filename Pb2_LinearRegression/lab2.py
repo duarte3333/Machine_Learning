@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import itertools
 
 def load_data():
     X_train = np.load('X_train_regression2.npy')
@@ -7,27 +8,27 @@ def load_data():
     X_test = np.load('X_test_regression2.npy')
     return X_train, y_train, X_test
 
-def corr_matrix(X_train):
-    correlation_matrix = np.corrcoef(X_train, rowvar=False)
-    plt.figure(figsize=(10, 8))  # Adjust the figure size as needed
-    plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
-    plt.colorbar()
-    plt.title('Correlation Matrix of X_train')
-    plt.xticks(range(correlation_matrix.shape[0]))
-    plt.yticks(range(correlation_matrix.shape[0]))
-    plt.show()
+def scatter_plot(X_train):
+    feature_combinations = list(itertools.combinations(range(X_train.shape[1]), 2))
 
-def histogram(X_train):
-    plt.hist(X_train, bins=7)
-    plt.xlabel('Value')
-    plt.ylabel('Frequency')
-    plt.title('Histogram of training data "X"')
+    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+    fig.subplots_adjust(hspace=0.5)
+
+    for i, (feature_idx1, feature_idx2) in enumerate(feature_combinations):
+        ax = axes[i // 3, i % 3]
+        ax.scatter(X_train[:, feature_idx1], X_train[:, feature_idx2])
+        ax.set_xlabel(f'Feature {feature_idx1 + 1}')
+        ax.set_ylabel(f'Feature {feature_idx2 + 1}')
+        ax.set_title(f'Scatter Plot: Feature {feature_idx1 + 1} vs. Feature {feature_idx2 + 1}')
+
+    plt.tight_layout()
     plt.show()
 
 def main():
     X_train, y_train, X_test = load_data()
-    corr_matrix(X_train)
-    histogram(X_train)
+    scatter_plot(X_train) #k means or other clustering algorithm might not be the best idea
+    
+
 
 if __name__ == '__main__':
     main()
