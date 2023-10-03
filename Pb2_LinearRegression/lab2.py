@@ -4,8 +4,11 @@ import itertools
 import seaborn as sns
 from sklearn import linear_model
 from sklearn.cluster import KMeans
-from statistics import mean
-from lab1 import*
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_validate
+from sklearn.metrics import mean_squared_error
+
 
 def load_data():
     X_train = np.load('X_train_regression2.npy')
@@ -101,7 +104,43 @@ def k_means_plot(X_train, cluster_indexs, cluster_centers):
 
     plt.tight_layout()
     plt.show()
+        
+def simple_approach(X_train, y_train, X_test):
+    #75% of data for training and 25% for validation.
+    #random state split the data the same every time you run the code.
+    split_ratio = 0.5
+    full_data = np.column_stack((X_train, y_train))
+    X_train_split, X_validation_split, y_train_split, y_validation_split = \
+        train_test_split(full_data[:, :-1], full_data[:, -1], \
+            test_size=0.25, random_state=42) #random state split the data the same every time
+    print("agr1", full_data[:, :-1].shape) # All lines except last feature. -> X_train
+    print("arg2", full_data[:, -1].shape) # All lines of last feature. -> y_train
+    model = linear_model.LinearRegression()
+    model.fit(X_train_split, y_train_split)
+    predictions = model.predict(X_validation_split)
+    sorted_indices = np.argsort(predictions) #organize by ascendent order the predictions
+    split_index = int(split_ratio * len(predictions))
+    data_group1 = full_data[sorted_indices[:split_index]] #data regression1
+    data_group2 = full_data[sorted_indices[split_index:]] #data regression2 
+    X_group1, y_group1 = data_group1[:, :-1], data_group1[:, -1]
+    X_group2, y_group2 = data_group2[:, :-1], data_group2[:, -1]
+    model_group1 = linear_model.LinearRegression()
+    model_group1.fit(X_group1, y_group1)
+    model_group2 = linear_model.LinearRegression()
+    model_group2.fit(X_group2, y_group2)
+    
+    # Calculate Mean Squared Error for Model 1 using validation split
+    mse_model1 = mean_squared_error(y_validation_split, model_group1.predict(X_validation_split))
 
+    # Calculate Mean Squared Error for Model 2 using validation split
+    mse_model2 = mean_squared_error(y_validation_split, model_group2.predict(X_validation_split))
+
+    print("Mean Squared Error (Model 1) on Training Data:", mse_model1)
+    print("Mean Squared Error (Model 2) on Training Data:", mse_model2)
+    
+
+
+    
 def main():
     X_train, y_train, X_test = load_data()
     residuals = residual_func(X_train, y_train)
