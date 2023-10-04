@@ -13,8 +13,7 @@ def linear_regression_model(X_train, y_train, k):
     model_scores = cross_validate(model, X_train, y_train,  # scoring='neg_mean_squared_error' to minimize the MSE
                                   cv=k, scoring='neg_mean_squared_error', return_train_score=True)
     model_MSE = abs(np.mean(model_scores['test_score']))
-    print("Linear - Mean squared error:", model_MSE, "\n")
-    return model, model_MSE
+    return model, model_MSE, "Linear"
 
 def ridge_regression(X_train, y_train, k):
     """ Fit ridge regression model and compute MSE using cross-validation."""
@@ -23,9 +22,7 @@ def ridge_regression(X_train, y_train, k):
     model.fit(X_train, y_train)
     ridge_lambda = model.alpha_  # Best lambda
     ridge_MSE = abs(model.best_score_)  # MSE of model
-    print("Ridge - Mean squared error:", ridge_MSE)
-    print("Ridge - Best lambda", ridge_lambda, "\n")
-    return model, ridge_MSE
+    return model, ridge_MSE, "Ridge"
 
 def lasso_regression(X_train, y_train, k):
     """ Fit lasso regression model and compute MSE using cross-validation."""
@@ -38,9 +35,7 @@ def lasso_regression(X_train, y_train, k):
     cross_model = cross_validate(new_model, X_train, y_train, cv=k,
                                  scoring='neg_mean_squared_error', return_train_score=True) #Evaluate MSE
     lasso_MSE = abs(cross_model['test_score'].mean())
-    print("Lasso - Mean squared error:", lasso_MSE)
-    print("Lasso - Best lambda", lasso_lambda, "\n")
-    return new_model, lasso_MSE
+    return new_model, lasso_MSE, "Lasso"
 
 def elastic_regression(X_train, y_train, k):
     """ Fit elastic net regression model and compute MSE using cross-validation."""
@@ -54,10 +49,7 @@ def elastic_regression(X_train, y_train, k):
     cross_model = cross_validate(new_model, X_train, y_train, cv=k,
                                  scoring='neg_mean_squared_error', return_train_score=True) #Evaluate MSE
     elastic_MSE = abs(cross_model['test_score'].mean())
-    print("Elastic - Mean Squared Error:", elastic_MSE)
-    print("Elastic - Best ratio", elastic_l1_ratio)
-    print("Elastic - Best lambda", elastic_lambda, "\n")
-    return new_model, elastic_MSE
+    return new_model, elastic_MSE, "Elastic"
 
 def lasso_lars_regression(X_train, y_train, k): #bad idea: just for high dimensional, uncorrelated features
     """ Fit lasso lars regression model and compute MSE using cross-validation."""
@@ -68,9 +60,7 @@ def lasso_lars_regression(X_train, y_train, k): #bad idea: just for high dimensi
     cross_model = cross_validate(new_model, X_train, y_train, cv=k,
                                scoring='neg_mean_squared_error', return_train_score=True)
     lasso_lars_MSE = abs(cross_model['test_score'].mean())
-    print("Lasso_lars - Mean squared error:", lasso_lars_MSE)
-    print("Lasso_lars - Best lambda", lasso_lars_lambda, "\n")
-    return new_model, lasso_lars_MSE
+    return new_model, lasso_lars_MSE, "LassoLARS"
 
 def bayesian_regression(X_train, y_train, k):
     """ Fit bayesian regression model and compute MSE using cross-validation. """
@@ -79,12 +69,11 @@ def bayesian_regression(X_train, y_train, k):
     cv_results = cross_validate(model, X_train, np.ravel(y_train), cv=k, scoring='neg_mean_squared_error',
                                 return_train_score=True)
     bayesian_mse = abs(cv_results['test_score'].mean())
-    print("Bayesian -  Mean squared: error", bayesian_mse, "\n")
-    return model, bayesian_mse
+    return model, bayesian_mse, "Bayesian"
 
 def orthogonal_matching_pursuit_regression(X_train, y_train, k): #Good idea: problem is overdeterminated
     """ Fit OMP regression model and compute MSE using cross-validation."""
-    model = (linear_model.OrthogonalMatchingPursuitCV(cv=k, max_iter=10))
+    model = (linear_model.OrthogonalMatchingPursuitCV(cv=k, max_iter=4))
     model.fit(X_train, np.ravel(y_train))
     omp_n_zero_coef = model.n_nonzero_coefs_  # Choose number of non zero coefficients that best fits the data
     new_model = linear_model.OrthogonalMatchingPursuit(n_nonzero_coefs=omp_n_zero_coef, fit_intercept= True)
@@ -92,9 +81,7 @@ def orthogonal_matching_pursuit_regression(X_train, y_train, k): #Good idea: pro
         , X_train, y_train, cv=k,
         scoring='neg_mean_squared_error', return_train_score=True)
     omp_MSE = abs(cross_model['test_score'].mean())
-    print("Omp - Mean Squared Error", omp_MSE)
-    print("Omp - Number of zero coefficients", omp_n_zero_coef, "\n")
-    return new_model, omp_MSE
+    return new_model, omp_MSE, "OMP"
 
 def standardization_data(X_train, X_test):
     """Standardize the data by removing the mean and scaling to unit variance."""
@@ -103,50 +90,17 @@ def standardization_data(X_train, X_test):
     X_test_norm = scaler.transform(X_test)
     return X_train_norm, X_test_norm
 
-def load_data():
-    """ Load the training and test data. """
-    X_train = np.load('X_train_regression1.npy')
-    y_train = np.load('y_train_regression1.npy')
-    X_test = np.load('X_test_regression1.npy')
-    return X_train, y_train, X_test
-
-def corr_matrix(X_train):
-    """ Plot a correlation matrix of X data to determine correlation between features. """
-    correlation_matrix = np.corrcoef(X_train, rowvar=False)
-    plt.figure(figsize=(10, 8))  # Adjust the figure size as needed
-    plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
-    plt.colorbar()
-    plt.title('Correlation Matrix of X_train')
-    plt.xticks(range(correlation_matrix.shape[0]))
-    plt.yticks(range(correlation_matrix.shape[0]))
-    plt.show()
-
-def histogram(X_train):
-    """ Plot a histogram of X data. """
-    fig, axe = plt.subplots(nrows=2, ncols=5, figsize=(18, 8))
-    axe = axe.flatten() #Easy way to plot the 10 subplots
-
-    for i in range(len(X_train[0])):
-        axe[i].hist(X_train[:, i],color='mediumseagreen',  bins=5) 
-        axe[i].set_title('Feature')
-        axe[i].set_xlabel('Value')
-        axe[i].set_ylabel('Frequency')
-
-    plt.tight_layout() #So y_label doesn't intercept other histograms
-    plt.show()
-
 def get_best_model(functions, X, y, k):
     """ Iterate through models and return the one with the lowest MSE."""
     final_model = None
     final_error = float('inf')
     for func in functions:
-        model, error = func(X, y, k)
+        model, error, name = func(X, y, k)
+        print("Name: ", name, "Error: ", error)
         if error < final_error:
             final_error = error
             final_model = model      
-    print("final model", final_model)
-    print("final error", final_error)
-    return final_model, final_error
+    return final_model, final_error, name
 
 def predict(model, X_train, y_train, X_test): 
     """ Predict y values for the test data using the specified model. """
@@ -154,22 +108,4 @@ def predict(model, X_train, y_train, X_test):
     y_predict = model.predict(X_test)
     return y_predict
 
-def main():
-    """ Load data, preprocess, select best model, and make predictions. """
-    X_train, y_train, X_test = load_data()
-    X_train_norm, X_test_norm = standardization_data(X_train, X_test) 
-    histogram(X_train) #Data seems already pre-processed
-    histogram(X_train_norm) #No big difference between the both histograms so we'll use X_train for lower MSE
-    k =10  # Number of folds, test with k-fold cross validation 
-    functions = [linear_regression_model, ridge_regression,
-                 lasso_regression, lasso_lars_regression, 
-                 bayesian_regression,
-                 elastic_regression, orthogonal_matching_pursuit_regression] #All models which we are testing
-    best_model = get_best_model(functions, X_train, y_train, k)
-    y_predict = predict(best_model, X_train, y_train, X_test) 
-    np.save('Y_Predicted.npy', y_predict)
-
-
-if __name__ == '__main__':
-    main()
 
