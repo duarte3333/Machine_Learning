@@ -24,7 +24,7 @@ def residual_func(X_train, y_train, functions):
     print("Final error", final_error)
     residual_model.fit(X_train, y_train)
     y_hat = residual_model.predict(X_train)
-    residuals = y_train - y_hat
+    residuals = (y_train - y_hat)
 
     return residuals
 
@@ -56,10 +56,10 @@ def choose_k(functions, X_train_1, y_train_1, X_train_2, y_train_2):
     best_error = float('inf')
     best_model_1, best_model_2, best_name1, best_name2  = None, None, None, None
     for k in range(2,5):  # Number of folds, test with k-fold cross validation 
-        print(">Current value of K: ", k)
-        print(">>Model 1")
+        #print(">Current value of K: ", k)
+        #print(">>Model 1")
         model_1, error_1, name1 = get_best_model(functions, X_train_1, y_train_1, k)
-        print(">>Model 2")
+        #print(">>Model 2")
         model_2, error_2, name2 = get_best_model(functions, X_train_2, y_train_2, k)
         mean_error = mean([error_1, error_2])
         if mean_error < best_error:
@@ -134,6 +134,9 @@ def process_models(X_train, y_train, functions, residuals, func_model):
 def main():
     X_train, y_train, X_test = load_data()
     
+    X_y_train = np.concatenate((X_train, y_train), axis=1)
+    print(X_y_train.shape)
+    
     functions = [linear_regression_model, ridge_regression,
                  lasso_regression, lasso_lars_regression, 
                  bayesian_regression,
@@ -141,14 +144,24 @@ def main():
     
     print("-------------------------RESIDUALS-----------------------------")
     residuals = residual_func(X_train, y_train, functions)
-    print("-------------------------K-MEANS-------------------------------")
-    process_models(X_train, y_train, functions, residuals, k_means)
-    print("----------------------GAUSSIAN-MIXTURE-------------------------")
-    process_models(X_train, y_train, functions, residuals, gaussian__mixture_model)
-    print("----------------K-MEANS WITHOUT RESIDUALS----------------------")
-    process_models(X_train, y_train, functions, None, k_means)
-    print("----------------GAUSSIAN-MIXTURE WITHOUT RESIDUALS-------------")
-    process_models(X_train, y_train, functions, None, gaussian__mixture_model)
+    a = "-------------------------K-MEANS-------------------------------"
+    b = "----------------------GAUSSIAN-MIXTURE-------------------------"
+    c = "----------------K-MEANS WITHOUT RESIDUALS----------------------"
+    d = "----------------GAUSSIAN-MIXTURE WITHOUT RESIDUALS-------------"
+    e = "--------------------GAUSSIAN-MIXTURE_X_Y-----------------------"
+    f = "------------------------K-MEANS_X_Y----------------------------"
+    
+    actions = [(residuals, k_means, a), 
+               (residuals, gaussian__mixture_model, b),
+               (None, k_means, c), 
+               (None, gaussian__mixture_model, d),
+               (X_y_train, gaussian__mixture_model, e), 
+               (X_y_train, k_means, f)]
+    
+    for action in actions:
+        print(action[2])
+        process_models(X_train, y_train, functions, action[0], action[1])
+        
    
     #scatter_plot(X_train) #k means or other clustering algorithm might not be the best idea
     #k_means_plot(X_train, cluster_indexs, cluster_centers)

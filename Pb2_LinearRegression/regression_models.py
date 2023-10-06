@@ -96,7 +96,7 @@ def get_best_model(functions, X, y, k):
     final_error = float('inf')
     for func in functions:
         model, error, name = func(X, y, k)
-        print("Name: ", name, "Error: ", error)
+        #print("Name: ", name, "Error: ", error)
         if error < final_error:
             final_error = error
             final_model = model      
