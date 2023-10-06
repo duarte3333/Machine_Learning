@@ -1,8 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import itertools
-import seaborn as sns
-from sklearn import linear_model
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 from sklearn.model_selection import train_test_split
@@ -17,6 +14,20 @@ def load_data():
     X_test = np.load('X_test_regression2.npy')
     return X_train, y_train, X_test
 
+def histogram(X_train):
+    """ Plot a histogram of X data. """
+    fig, axe = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
+    axe = axe.flatten() #Easy way to plot the 10 subplots
+
+    for i in range(len(X_train[0])):
+        axe[i].hist(X_train[:, i],color='mediumseagreen',  bins=10) 
+        axe[i].set_title('Feature')
+        axe[i].set_xlabel('Value')
+        axe[i].set_ylabel('Frequency')
+
+    plt.tight_layout() #So y_label doesn't intercept other histograms
+    plt.show()
+
 def residual_func(X_train, y_train, functions):
     """ Calculate residuals using a linear regression model. """
     residual_model, final_error, name = get_best_model(functions, X_train, y_train, 10)
@@ -25,7 +36,6 @@ def residual_func(X_train, y_train, functions):
     residual_model.fit(X_train, y_train)
     y_hat = residual_model.predict(X_train)
     residuals = (y_train - y_hat)
-
     return residuals
 
 def gaussian__mixture_model(X_train, y_train):
@@ -41,16 +51,13 @@ def k_means(X_train, y_train):
     k_means = KMeans(n_clusters=2, init= 'k-means++', n_init= 10) #init is how algorithm starts, as it stands is greedy algorithm
     k_means.fit(X_train)
     cluster_indexs = k_means.fit_predict(X_train)
-    cluster_centers = k_means.cluster_centers_
     return cluster_indexs
-
 
 def data_split(X, y, cluster_indexs):
     """ Splits input data into two clusters based on cluster indices. """
     X_c1, X_c2 = X[cluster_indexs == 0], X[cluster_indexs == 1]
     y_c1, y_c2 = y[cluster_indexs == 0], y[cluster_indexs == 1]
     return X_c1, X_c2, y_c1, y_c2
-    
 
 def choose_k(functions, X_train_1, y_train_1, X_train_2, y_train_2):
     best_error = float('inf')
@@ -68,58 +75,11 @@ def choose_k(functions, X_train_1, y_train_1, X_train_2, y_train_2):
             best_model_1, best_model_2  = model_1, model_2
             best_name1, best_name2 = name1, name2
             k_final = k
+
     print('The number of folds that minimizes MSE is k =',k_final,'resulting in a MSE of', best_error)
     print("Best model 1: ", best_name1, " Error model 1: ", final_error_1)    
     print("Best model 2: ", best_name2, " Error model 2: ", final_error_2)    
     return best_model_1, best_model_2
-
-def k_means_plot(X_train, cluster_indexs, cluster_centers):
-    #Plot all 6 combinations of cluters
-    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
-    fig.subplots_adjust(hspace=0.5)
-
-    combinations = list(itertools.combinations(range(X_train.shape[1]), 2))
-    for i, (feature_idx1, feature_idx2) in enumerate(combinations):
-        ax = axes[i // 3, i % 3]
-        scatter = ax.scatter(X_train[:, feature_idx1], X_train[:, feature_idx2], c=cluster_indexs, cmap='rainbow')
-        ax.set_xlabel(f'Feature {feature_idx1 + 1}')
-        ax.set_ylabel(f'Feature {feature_idx2 + 1}')
-        ax.set_title(f'Combination: {feature_idx1 + 1}, {feature_idx2 + 1}')
-
-    # Optionally, you can show the cluster centers as well
-    
-    for i, (feature_idx1, feature_idx2) in enumerate(combinations):
-        ax = axes[i // 3, i % 3]
-        ax.scatter(cluster_centers[:, feature_idx1], cluster_centers[:, feature_idx2], c='black', marker='x', s=100, label='Centroids')
-
-    plt.tight_layout()
-    plt.show()
-    
-def scatter_plot(X_train):
-    feature_combinations = list(itertools.combinations(range(X_train.shape[1]), 2))
-
-    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
-    fig.subplots_adjust(hspace=0.5)
-
-    for i, (feature_idx1, feature_idx2) in enumerate(feature_combinations):
-        ax = axes[i // 3, i % 3]
-        ax.scatter(X_train[:, feature_idx1], X_train[:, feature_idx2])
-        ax.set_xlabel(f'Feature {feature_idx1 + 1}')
-        ax.set_ylabel(f'Feature {feature_idx2 + 1}')
-        ax.set_title(f'Scatter Plot: Feature {feature_idx1 + 1} vs. Feature {feature_idx2 + 1}')
-
-    plt.tight_layout()
-    plt.show()
-
-def heatmap(X_train):
-    """ If we go the route of doing hierarchical clustering. """
-
-    plt.figure(figsize=(8, 6))  
-    sns.heatmap(X_train, cmap="RdBu_r")  
-    plt.xlabel("Feature")
-    plt.ylabel("Sample")
-    plt.title("Heatmap of X_train")
-    plt.show()
 
 def process_models(X_train, y_train, functions, residuals, func_model):
     if residuals is None:
@@ -127,23 +87,24 @@ def process_models(X_train, y_train, functions, residuals, func_model):
     else:
         labels = func_model(residuals, y_train)
 
-    X_train_1, X_train_2, y_train_1, y_train_2 = data_split(X_train, y_train, labels)
-    best_model_1, best_model_2 = choose_k(functions, X_train_1, y_train_1, X_train_2, y_train_2)
-    return best_model_1, best_model_2
+    data_matrix = data_split(X_train, y_train, labels)
+    best_model_1, best_model_2 = choose_k(functions, data_matrix[0], data_matrix[2], data_matrix[1], data_matrix[3])
+    return best_model_1, best_model_2, data_matrix
 
 def main():
     X_train, y_train, X_test = load_data()
-    
     X_y_train = np.concatenate((X_train, y_train), axis=1)
-    print(X_y_train.shape)
     
+    # histogram(X_train)
+    # histogram(X_test) #data is normalized, so Gaussian-Mixture makes sense
+
     functions = [linear_regression_model, ridge_regression,
                  lasso_regression, lasso_lars_regression, 
                  bayesian_regression,
                  elastic_regression, orthogonal_matching_pursuit_regression]
-    
     print("-------------------------RESIDUALS-----------------------------")
     residuals = residual_func(X_train, y_train, functions)
+
     a = "-------------------------K-MEANS-------------------------------"
     b = "----------------------GAUSSIAN-MIXTURE-------------------------"
     c = "----------------K-MEANS WITHOUT RESIDUALS----------------------"
@@ -160,11 +121,16 @@ def main():
     
     for action in actions:
         print(action[2])
-        process_models(X_train, y_train, functions, action[0], action[1])
-        
-   
-    #scatter_plot(X_train) #k means or other clustering algorithm might not be the best idea
-    #k_means_plot(X_train, cluster_indexs, cluster_centers)
+        if action[2] == e: #We know that Gaussia-Mixture_X_y is the best model, so we save the values
+            best_model_1, best_model_2, data_matrix = process_models(X_train, y_train, 
+                                                                 functions, action[0], action[1])
+        else:
+            process_models(X_train, y_train, functions, action[0], action[1])
+
+    y_predict_1 = np.array(predict(best_model_1, data_matrix[0], data_matrix[2], X_test))
+    y_predict_2 = np.array(predict(best_model_2, data_matrix[1], data_matrix[3], X_test)).reshape(-1,1) #reshape transforms array into 2x1 array to be the same as y_predict_1
+    y_predict_total = np.concatenate((y_predict_1, y_predict_2), axis=1)
+    np.save('y_predicted.npy', y_predict_total)
 
 if __name__ == '__main__':
     main()

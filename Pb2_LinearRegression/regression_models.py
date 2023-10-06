@@ -93,14 +93,16 @@ def standardization_data(X_train, X_test):
 def get_best_model(functions, X, y, k):
     """ Iterate through models and return the one with the lowest MSE."""
     final_model = None
+    final_name = None
     final_error = float('inf')
     for func in functions:
         model, error, name = func(X, y, k)
         #print("Name: ", name, "Error: ", error)
         if error < final_error:
             final_error = error
-            final_model = model      
-    return final_model, final_error, name
+            final_model = model
+            final_name = name     
+    return final_model, final_error, final_name
 
 def predict(model, X_train, y_train, X_test): 
     """ Predict y values for the test data using the specified model. """
