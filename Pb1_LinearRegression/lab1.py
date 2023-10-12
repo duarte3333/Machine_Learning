@@ -167,6 +167,7 @@ def main():
                  elastic_regression, orthogonal_matching_pursuit_regression] #All models which we are testing
     best_model = get_best_model(functions, X_train, y_train, k)
     y_predict = predict(best_model, X_train, y_train, X_test) 
+    print(y_predict)
     np.save('Y_Predicted.npy', y_predict)
 
 
