@@ -109,7 +109,7 @@ def get_best_model(functions, X, y, k):
             final_name = name  #Save name for print   
     return final_model, final_error, final_name
 
-def predict(model, X_train, y_train, X_test): 
+def predict(model, X_train, y_train, X_test):
     """ Predict y values for the test data using the specified model. """
     model.fit(X_train, y_train)
     y_predict = model.predict(X_test)

@@ -39,7 +39,9 @@ def lasso_regression(X_train, y_train, k):
                                  scoring='neg_mean_squared_error', return_train_score=True) #Evaluate MSE
     lasso_MSE = abs(cross_model['test_score'].mean())
     print("Lasso - Mean squared error:", lasso_MSE)
-    print("Lasso - Best lambda", lasso_lambda, "\n")
+    print("Lasso - Best lambda", lasso_lambda)
+    print("Lasso - Nb zeros", np.sum(model.coef_ == 0), "\n")
+    
     return new_model, lasso_MSE
 
 def elastic_regression(X_train, y_train, k):
@@ -158,8 +160,8 @@ def main():
     """ Load data, preprocess, select best model, and make predictions. """
     X_train, y_train, X_test = load_data()
     X_train_norm, X_test_norm = standardization_data(X_train, X_test) 
-    histogram(X_train) #Data seems already pre-processed
-    histogram(X_train_norm) #No big difference between the both histograms so we'll use X_train for lower MSE
+    #histogram(X_train) #Data seems already pre-processed
+    #histogram(X_train_norm) #No big difference between the both histograms so we'll use X_train for lower MSE
     k =10  # Number of folds, test with k-fold cross validation 
     functions = [linear_regression_model, ridge_regression,
                  lasso_regression, lasso_lars_regression, 
