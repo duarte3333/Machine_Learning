@@ -1,4 +1,4 @@
-# Machine_Learning
+# Machine Learning Project
 ## Introduction
 
 This machine learning project had four parts – two were about predicting values (regression), and the other two 
