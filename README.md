@@ -7,7 +7,7 @@ were about sorting things into categories (classification). It's a type of learn
 using input data and the answers we already know.
 
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/ab29a5f5-35a5-42c1-8a78-354aed50c306" alt="image" width="500" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/03de7155-5f1a-433c-b459-4b28a41459e6" alt="image" width="500" />
 </p>
 
 ### Regression:
@@ -48,8 +48,7 @@ broader goal of machine learning, demonstrating its versatile applications in pr
 **Approach:** Ten-fold cross-validation with Mean Squared Error (MSE) metric.
 
 **Results and Conclusions:**
-![image](https://github.com/duarte3333/Machine_Learning/assets/76222459/6f821936-7e81-431c-bc35-34b51bd026e7)
-
+![image](https://github.com/duarte3333/Machine_Learning/assets/76222459/66422e86-e573-4bde-a977-f11c2234b337)
 - OMP model performed the best with the lowest MSE (2.680).
 - OMP identified five non-zero coefficients, emphasizing its significance in feature selection.
 - Lasso Regression performed less effectively than Ridge Regression.
@@ -63,13 +62,16 @@ Distinguish between instances created by these two distinct models.
 **Models Used:**
 - K-Means
 - Gaussian Mixture Model (GMM)
-
-![image](https://github.com/duarte3333/Machine_Learning/assets/76222459/de374be6-804c-4dc8-b453-6d85e0d38adb)
+  
+![image](https://github.com/duarte3333/Machine_Learning/assets/76222459/03f1a71f-bf3b-4023-a555-fb7c59def432)
 
 **Approach:** Applied clustering techniques (K-Means and Gaussian Mixture Model) to divide the 
 training data and create individual regression models.
 
 **Results and Conclusions:**
+
+![image](https://github.com/duarte3333/Machine_Learning/assets/76222459/8a72a055-ad29-43f6-a870-e15f735d8871)
+
 - Gaussian Mixture Model with Ridge Regression achieved the lowest MSE (0.046).
 - Residual analysis and input training data approach explored.
 - Importance of considering both input and output data for clustering.
@@ -80,9 +82,8 @@ training data and create individual regression models.
 
 **Goal:** Perform binary image classification on dermoscopy images, predicting whether an image is from a melanoma or a nevus.
 
-
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/9e6737e8-4fcb-4d7d-957e-d99f86c2ff30" alt="image" width="700" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/51f06b36-db81-42c4-98d4-9d093fa429f1" alt="image" width="700" />
 </p>
 
 **Data Preparation:**
@@ -106,12 +107,12 @@ training data and create individual regression models.
 
 **Summary of the Results:**
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/8a37e85c-cf7d-4ead-89c9-470a8929daef" alt="image" width="800" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/df365e89-3ee1-457f-b4ce-be0c912f2e2d" alt="image" width="800" />
 </p>
 
 **Confusion Matrix for CNN the best results (CNN3) using Validation Data:**
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/7bd648a0-6020-4678-8bd5-c0a4729caf39" alt="image" width="500" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/1e5b33f7-055d-4151-a0f7-4ebdc5c949a7" alt="image" width="500" />
 </p>
 
 **Insights:**
@@ -126,14 +127,17 @@ distinct datasets: dermoscopy and blood cell microscopy. The objective was to cl
 into six different categories: nevus (0), melanoma (1), vascular lesions (2), granulocytes (3), basophils (4), and lymphocytes (5).
 
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/007cc502-51bc-4e96-be94-f84ece35ea7f" alt="image" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/eb36243c-94f5-4f8a-8250-f107e182625d" alt="image" />
 </p>
 
 **Models Used**
 - Convolutional Neural Network (CNN)
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/f538a2c5-7441-4985-ab82-e09e6e898c18" alt="image" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/d64a9b4c-1aa0-4949-9838-4158adf7a56c" alt="image" />
 </p>
+
+![Uploading image.png…]()
+
 
 **Data Preprocessing**
 - Random oversampling technique employed for minority classes to address class imbalance.
@@ -148,7 +152,7 @@ into six different categories: nevus (0), melanoma (1), vascular lesions (2), gr
 **Summary of Approaches and Results for CNN number 1:**
 
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/ee624975-bb38-407c-8141-60a2fc8cba84" alt="image" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/69343c0d-3cdb-41da-a342-e433ab9e30d6" alt="image" />
 </p>
 
 **Summary of Approaches and Results for CNN number 2:**
@@ -160,7 +164,7 @@ into six different categories: nevus (0), melanoma (1), vascular lesions (2), gr
 **Confusion Matrix for CNN with best results (CNN2) using Validation Data:**
 
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/6c599798-cd7f-4f3a-a6f3-1809ad8fc179" alt="image" width="600" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/bc86fd66-cb63-40e2-a077-4ffa0dfc5775" alt="image" width="600" />
 </p>
 
 **Insights:**
