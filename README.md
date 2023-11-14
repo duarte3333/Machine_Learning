@@ -5,7 +5,7 @@ This machine learning project had four parts – two were about predicting value
 were about sorting things into categories (classification). It's a type of learning(Supervised Learning) where the computer learns from both input and output data to get better at the task.
 
 <p align="center">
-  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/03de7155-5f1a-433c-b459-4b28a41459e6" alt="image" width="400" />
+  <img src="https://github.com/duarte3333/Machine_Learning/assets/76222459/03de7155-5f1a-433c-b459-4b28a41459e6" alt="image" width="500" />
 </p>
 
 ### Regression:
